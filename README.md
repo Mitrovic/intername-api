@@ -45,3 +45,10 @@ or
       - "8003:80"
 ```
 respectively.
+## Dummy User Credentials
+
+For testing purposes use: 
+
+email: author@example.com
+
+password: password
