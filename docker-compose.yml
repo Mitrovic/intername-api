@@ -1,0 +1,47 @@
+version: "3.7"
+networks:
+  intername:
+    driver: bridge
+services:
+  api:
+    build:
+      args:
+        user: admin
+        uid: 1000
+      context: ./
+      dockerfile: docker/Dockerfile
+    image: intername_api
+    container_name: intername_api_container
+    restart: unless-stopped
+    working_dir: /var/www/api
+    volumes:
+      - ./:/var/www/api
+    networks:
+      - intername
+  db:
+    image: mysql:8.0
+    container_name: intername-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: intername
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_USER: admin
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - intername
+
+  nginx:
+    image: nginx:alpine
+    container_name: intername_api_nginx
+    restart: unless-stopped
+    ports:
+      - "8003:80"
+    volumes:
+      - ./:/var/www/api
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - intername
